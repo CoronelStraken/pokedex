@@ -1,12 +1,40 @@
-# React + Vite
+# PokeApp
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Aplicación tipo Pokédex hecha con **React + Vite**.  
+Permite buscar Pokémon (búsqueda transversal), paginar resultados, ver el detalle (Pokedex) y marcar/desmarcar favoritos con persistencia en memoria (context).
 
-Currently, two official plugins are available:
+## ✨ Funcionalidades
+- 🔎 **Búsqueda transversal** por nombre (sobre todo el índice).
+- 📄 **Paginación** con botones Previous / Next y numéricos (salta al inicio al cambiar de página).
+- 📘 **Detalle Pokédex** con imagen, tipos, altura, peso y descripción.
+- ⭐ **Favoritos**: marcar desde el grid, listar y remover en la vista de favoritos.
+- 🎨 **Estilo Pokédex**: borde rojo, “pantalla” negra para sprites, tipografía limpia.
+- 🧪 **Test unitario** (Vitest + Testing Library) para la vista de favoritos.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🛠️ Tech Stack
+- React 19 + Vite
+- React Router DOM
+- Axios
+- Bootstrap 5
+- Vitest + @testing-library/react + jsdom
 
-## Expanding the ESLint configuration
+## 📦 Requisitos
+- Node.js 18+  
+- npm 9+
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## 🚀 Comandos
+```bash
+# instalar dependencias
+npm install
+
+# modo desarrollo
+npm run dev
+
+# build de producción
+npm run build
+
+# previsualizar build
+npm run preview
+
+# tests
+npm run test

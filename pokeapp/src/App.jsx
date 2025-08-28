@@ -12,14 +12,14 @@ function App() {
       <nav className="navbar navbar-expand-lg navbar-light bg-light mb-4 shadow-sm">
         <div className="container">
           <Link className="navbar-brand fw-bold text-danger" to="/">
-            PokéApp
+            PokeApp
           </Link>
           <div className="ms-auto d-flex gap-3">
             <Link className="btn btn-outline-primary" to="/grid">
               PokeGrid
             </Link>
             <Link className="btn btn-warning" to="/favorites">
-              ⭐ Favoritos
+              ⭐ Favorites
             </Link>
           </div>
         </div>
