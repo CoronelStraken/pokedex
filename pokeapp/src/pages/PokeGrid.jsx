@@ -1,19 +1,24 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
+import { useFavorites } from "../context/FavoritesContext";
+import { FaStar } from "react-icons/fa";
 
 function PokeGrid() {
-  const [allPokemons, setAllPokemons] = useState([]); // índice global (nombre, id, imagen)
+  const [allPokemons, setAllPokemons] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
 
   const pageSize = 30;
 
+  // Importamos funciones del contexto
+  const { favorites, toggleFavorite, isFavorite } = useFavorites();
+
   const scrollToTop = () =>
     window.scrollTo({ top: 0, behavior: "smooth" });
 
-  // Carga UN SOLO ÍNDICE GLOBAL (nombres + ids) para búsqueda transversal
+  // Cargar todos los Pokémon
   useEffect(() => {
     const fetchAll = async () => {
       try {
@@ -21,7 +26,8 @@ function PokeGrid() {
         const first = await axios.get(
           "https://pokeapi.co/api/v2/pokemon?limit=1&offset=0"
         );
-        const total = first.data.count; // total real desde la API
+        const total = first.data.count;
+
         const res = await axios.get(
           `https://pokeapi.co/api/v2/pokemon?limit=${total}&offset=0`
         );
@@ -32,7 +38,6 @@ function PokeGrid() {
           return {
             id,
             name,
-            // arte oficial (se ve mejor que el sprite por defecto)
             image: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png`,
           };
         });
@@ -48,20 +53,19 @@ function PokeGrid() {
     fetchAll();
   }, []);
 
-  // Filtrado transversal por nombre (sobre el índice completo)
+  // Filtrar por nombre
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
     if (!q) return allPokemons;
     return allPokemons.filter((p) => p.name.toLowerCase().includes(q));
   }, [search, allPokemons]);
 
-  // Paginación sobre el resultado filtrado
+  // Paginación
   const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
   const currentPage = Math.min(page, totalPages);
   const start = (currentPage - 1) * pageSize;
   const visible = filtered.slice(start, start + pageSize);
 
-  // Si cambia la búsqueda, vuelve a la página 1
   useEffect(() => {
     setPage(1);
   }, [search]);
@@ -71,7 +75,6 @@ function PokeGrid() {
     scrollToTop();
   };
 
-  // Ventana de botones numéricos (máx 5 visibles)
   const getPageWindow = () => {
     const windowSize = 5;
     let startPage = Math.max(1, currentPage - Math.floor(windowSize / 2));
@@ -97,9 +100,12 @@ function PokeGrid() {
 
   return (
     <div className="container py-4">
-      <h2 className="mb-4 text-center">PokeGrid</h2>
+      <h2 className="mb-4 text-center">
+  PokeGrid
+</h2>
 
-      {/* Barra de búsqueda transversal */}
+
+      {/* Barra de búsqueda */}
       <div className="mb-3">
         <input
           type="text"
@@ -113,43 +119,54 @@ function PokeGrid() {
         </small>
       </div>
 
-      {/* Cards (3 columnas en desktop) */}
-      
-<div className="row g-3">
-  {visible.length > 0 ? (
-    visible.map((pokemon) => (
-      <div className="col-12 col-md-6 col-lg-4" key={pokemon.id}>
-        <div className="card shadow-sm pokedex-card text-center p-3 h-100">
-          {/* Pantalla negra */}
-          <div className="pokedex-screen mb-2">
-            <img
-              src={pokemon.image}
-              alt={pokemon.name}
-              className="pokedex-image"
-            />
-          </div>
+      {/* Grid */}
+      <div className="row g-3">
+        {visible.length > 0 ? (
+          visible.map((pokemon) => (
+            <div className="col-12 col-md-6 col-lg-4" key={pokemon.id}>
+              <div className="card shadow-sm pokedex-card text-center p-3 h-100 position-relative">
+                {/* Botón de favorito */}
+                <button
+                  className="btn position-absolute top-0 end-0 m-2"
+                  style={{ background: "transparent", border: "none" }}
+                  onClick={() => toggleFavorite(pokemon)}
+                >
+                  <FaStar
+                    size={22}
+                    color={isFavorite(pokemon.id) ? "#FFD700" : "#ccc"}
+                  />
+                </button>
 
-          {/* Nombre en amarillo */}
-          <h6 style={{ color: "#FFD700" }}>
-            #{pokemon.id} {pokemon.name}
-          </h6>
+                {/* Imagen */}
+                <div className="pokedex-screen mb-2">
+                  <img
+                    src={pokemon.image}
+                    alt={pokemon.name}
+                    className="pokedex-image"
+                  />
+                </div>
 
-          <Link
-            to={`/pokedex/${pokemon.name}`}
-            className="btn btn-outline-primary btn-sm mt-2"
-          >
-            View Pokedex
-          </Link>
-        </div>
+                {/* Nombre */}
+                <h6 style={{ color: "#FFD700" }}>
+                  #{pokemon.id} {pokemon.name}
+                </h6>
+
+                {/* Link */}
+                <Link
+                  to={`/pokedex/${pokemon.name}`}
+                  className="btn btn-outline-primary btn-sm mt-2"
+                >
+                  View Pokedex
+                </Link>
+              </div>
+            </div>
+          ))
+        ) : (
+          <p className="text-center">No Pokémon found.</p>
+        )}
       </div>
-    ))
-  ) : (
-    <p className="text-center">No Pokémon found.</p>
-  )}
-</div>
 
-
-      {/* Paginación numérica */}
+      {/* Paginación */}
       <div className="d-flex justify-content-center align-items-center mt-4 flex-wrap gap-2">
         <button
           className="btn btn-secondary"
@@ -159,7 +176,6 @@ function PokeGrid() {
           Previous
         </button>
 
-        {/* Botones con números */}
         {getPageWindow().map((n) => (
           <button
             key={n}
@@ -181,7 +197,6 @@ function PokeGrid() {
         </button>
       </div>
 
-      {/* Info de página */}
       <div className="text-center mt-2 text-muted">
         Page {currentPage} of {totalPages}
       </div>
