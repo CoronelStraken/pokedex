@@ -11,7 +11,6 @@ function Pokedex() {
   useEffect(() => {
     const fetchPokemon = async () => {
       try {
-        // Datos principales del Pokémon
         const response = await axios.get(`https://pokeapi.co/api/v2/pokemon/${name}`);
         const species = await axios.get(response.data.species.url);
 
@@ -20,13 +19,12 @@ function Pokedex() {
           name: response.data.name,
           image: response.data.sprites.other["official-artwork"].front_default,
           types: response.data.types.map((t) => t.type.name),
-          height: response.data.height / 10, // en metros
-          weight: response.data.weight / 10, // en kg
+          height: response.data.height / 10,
+          weight: response.data.weight / 10,
         });
 
-        // Busca la descripción en inglés
         const entry = species.data.flavor_text_entries.find(
-          (entry) => entry.language.name === "en"
+          (e) => e.language.name === "en"
         );
         setDescription(entry ? entry.flavor_text.replace(/\f/g, " ") : "No description available.");
       } catch (error) {
@@ -68,30 +66,24 @@ function Pokedex() {
       </h2>
     </div>
 
-    <div
-      className="card shadow p-4"
-      style={{
-        backgroundColor: "#FF0000", // rojo principal
-        borderRadius: "20px",
-        color: "white",
-      }}
-    >
-      <div className="text-center">
+    {/* Card estilo Pokédex */}
+    <div className="pokedex-card shadow p-4">
+      {/* Pantalla negra */}
+      <div className="pokedex-screen mb-3">
         <img
           src={pokemon.image}
           alt={pokemon.name}
-          style={{
-            width: "200px",
-            height: "200px",
-            objectFit: "contain",
-            backgroundColor: "#FFFFFF",
-            borderRadius: "10px",
-            padding: "10px",
-          }}
+          className="pokedex-image"
         />
       </div>
 
-      <div className="mt-4">
+      {/* Nombre con texto resaltado */}
+      <div className="text-center mb-3">
+        <h5 style={{ color: "#FFD700" }}>#{pokemon.id} {pokemon.name}</h5>
+      </div>
+
+      {/* Datos */}
+      <div className="pokedex-details px-3">
         <p><strong>Type(s):</strong> {pokemon.types.join(", ")}</p>
         <p><strong>Height:</strong> {pokemon.height} m</p>
         <p><strong>Weight:</strong> {pokemon.weight} kg</p>

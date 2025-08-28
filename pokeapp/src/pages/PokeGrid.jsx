@@ -114,36 +114,40 @@ function PokeGrid() {
       </div>
 
       {/* Cards (3 columnas en desktop) */}
-      <div className="row g-3">
-        {visible.length > 0 ? (
-          visible.map((pokemon) => (
-            <div className="col-12 col-md-6 col-lg-4" key={pokemon.id}>
-              <div className="card shadow-sm text-center p-3 h-100">
-                <div className="d-flex justify-content-center">
-                  <img
-                    src={pokemon.image}
-                    alt={pokemon.name}
-                    style={{ width: 120, height: 120, objectFit: "contain" }}
-                  />
-                </div>
-                <div className="card-body">
-                  <h6 className="card-title text-capitalize mb-2">
-                    #{pokemon.id} {pokemon.name}
-                  </h6>
-                  <Link
-                    to={`/pokedex/${pokemon.name}`}
-                    className="btn btn-outline-primary btn-sm"
-                  >
-                    View Pokedex
-                  </Link>
-                </div>
-              </div>
-            </div>
-          ))
-        ) : (
-          <p className="text-center">No Pokémon found.</p>
-        )}
+      
+<div className="row g-3">
+  {visible.length > 0 ? (
+    visible.map((pokemon) => (
+      <div className="col-12 col-md-6 col-lg-4" key={pokemon.id}>
+        <div className="card shadow-sm pokedex-card text-center p-3 h-100">
+          {/* Pantalla negra */}
+          <div className="pokedex-screen mb-2">
+            <img
+              src={pokemon.image}
+              alt={pokemon.name}
+              className="pokedex-image"
+            />
+          </div>
+
+          {/* Nombre en amarillo */}
+          <h6 style={{ color: "#FFD700" }}>
+            #{pokemon.id} {pokemon.name}
+          </h6>
+
+          <Link
+            to={`/pokedex/${pokemon.name}`}
+            className="btn btn-outline-primary btn-sm mt-2"
+          >
+            View Pokedex
+          </Link>
+        </div>
       </div>
+    ))
+  ) : (
+    <p className="text-center">No Pokémon found.</p>
+  )}
+</div>
+
 
       {/* Paginación numérica */}
       <div className="d-flex justify-content-center align-items-center mt-4 flex-wrap gap-2">
