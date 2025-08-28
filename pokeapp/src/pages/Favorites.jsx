@@ -1,10 +1,11 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useFavorites } from "../context/FavoritesContext";
 import { useState } from "react";
 
 function Favorites() {
   const { favorites, toggleFavorite } = useFavorites();
   const [page, setPage] = useState(1);
+  const navigate = useNavigate();
 
   const pageSize = 30;
   const totalPages = Math.max(1, Math.ceil(favorites.length / pageSize));
@@ -12,9 +13,7 @@ function Favorites() {
   const start = (currentPage - 1) * pageSize;
   const visible = favorites.slice(start, start + pageSize);
 
-  const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
+  const scrollToTop = () => window.scrollTo({ top: 0, behavior: "smooth" });
 
   const goToPage = (n) => {
     setPage(n);
@@ -50,7 +49,11 @@ function Favorites() {
       <div className="row g-3">
         {visible.map((pokemon) => (
           <div className="col-12 col-md-6 col-lg-4" key={pokemon.id}>
-            <div className="card shadow-sm pokedex-card text-center p-3 h-100 position-relative">
+            <div
+              className="card shadow-sm pokedex-card text-center p-3 h-100 position-relative"
+              style={{ cursor: "pointer" }}
+              onClick={() => navigate(`/pokedex/${pokemon.name}`)}
+            >
               {/* Imagen */}
               <div className="pokedex-screen mb-2">
                 <img
@@ -68,18 +71,24 @@ function Favorites() {
               {/* Botón Remove */}
               <button
                 className="btn btn-outline-danger btn-sm mt-2"
-                onClick={() => toggleFavorite(pokemon)}
+                onClick={(e) => {
+                  e.stopPropagation(); // evita abrir Pokedex al eliminar
+                  toggleFavorite(pokemon);
+                }}
               >
                 Remove
               </button>
 
-              {/* Link */}
-              <Link
-                to={`/pokedex/${pokemon.name}`}
+              {/* Botón View Pokedex */}
+              <button
                 className="btn btn-outline-primary btn-sm mt-2"
+                onClick={(e) => {
+                  e.stopPropagation(); // evita conflicto con el clic de la tarjeta
+                  navigate(`/pokedex/${pokemon.name}`);
+                }}
               >
                 View Pokedex
-              </Link>
+              </button>
             </div>
           </div>
         ))}
