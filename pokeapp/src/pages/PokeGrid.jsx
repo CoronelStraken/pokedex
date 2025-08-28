@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useFavorites } from "../context/FavoritesContext";
 import { FaStar } from "react-icons/fa";
@@ -12,13 +12,12 @@ function PokeGrid() {
 
   const pageSize = 30;
 
-  // Importamos funciones del contexto
-  const { favorites, toggleFavorite, isFavorite } = useFavorites();
+  const { toggleFavorite, isFavorite } = useFavorites();
+  const navigate = useNavigate();
 
   const scrollToTop = () =>
     window.scrollTo({ top: 0, behavior: "smooth" });
 
-  // Cargar todos los Pokémon
   useEffect(() => {
     const fetchAll = async () => {
       try {
@@ -53,14 +52,12 @@ function PokeGrid() {
     fetchAll();
   }, []);
 
-  // Filtrar por nombre
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
     if (!q) return allPokemons;
     return allPokemons.filter((p) => p.name.toLowerCase().includes(q));
   }, [search, allPokemons]);
 
-  // Paginación
   const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
   const currentPage = Math.min(page, totalPages);
   const start = (currentPage - 1) * pageSize;
@@ -100,10 +97,7 @@ function PokeGrid() {
 
   return (
     <div className="container py-4">
-      <h2 className="mb-4 text-center">
-  PokeGrid
-</h2>
-
+      <h2 className="mb-4 text-center">PokeGrid</h2>
 
       {/* Barra de búsqueda */}
       <div className="mb-3">
@@ -124,12 +118,23 @@ function PokeGrid() {
         {visible.length > 0 ? (
           visible.map((pokemon) => (
             <div className="col-12 col-md-6 col-lg-4" key={pokemon.id}>
-              <div className="card shadow-sm pokedex-card text-center p-3 h-100 position-relative">
-                {/* Botón de favorito */}
+              {/* Card completa clickeable */}
+              <div
+                className="card shadow-sm pokedex-card text-center p-3 h-100 position-relative"
+                role="button"
+                onClick={() => navigate(`/pokedex/${pokemon.name}`)}
+              >
+                {/* Botón de favorito (no navega) */}
                 <button
                   className="btn position-absolute top-0 end-0 m-2"
                   style={{ background: "transparent", border: "none" }}
-                  onClick={() => toggleFavorite(pokemon)}
+                  onClick={(e) => {
+                    e.stopPropagation(); // evita navegar
+                    toggleFavorite(pokemon);
+                  }}
+                  aria-label={
+                    isFavorite(pokemon.id) ? "Remove favorite" : "Add favorite"
+                  }
                 >
                   <FaStar
                     size={22}
@@ -151,10 +156,11 @@ function PokeGrid() {
                   #{pokemon.id} {pokemon.name}
                 </h6>
 
-                {/* Link */}
+                {/* Link accesible (opcional de apoyo) */}
                 <Link
                   to={`/pokedex/${pokemon.name}`}
                   className="btn btn-outline-primary btn-sm mt-2"
+                  onClick={(e) => e.stopPropagation()}
                 >
                   View Pokedex
                 </Link>
